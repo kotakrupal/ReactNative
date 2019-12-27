@@ -101,7 +101,7 @@ class Dishdetail extends Component {
         this.setState({showModal: !this.state.showModal});
     }
 
-    writeComment() {
+    handleComment() {
         console.log(JSON.stringify(this.state));
         const dishId = this.props.navigation.getParam('dishId', '');
         this.props.postComment(dishId, this.state.rating, this.state.author, this.state.comment);
@@ -156,7 +156,7 @@ class Dishdetail extends Component {
                         onChangeText={(comment) => this.newComment(comment)}/>
                     </View>
                     <Button 
-                        onPress = {() =>{this.writeComment(); }}
+                        onPress = {() =>{this.handleComment(); }}
                         color="#512DA8"
                         title="Submit" 
                         />
