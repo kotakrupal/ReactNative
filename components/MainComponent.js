@@ -7,11 +7,12 @@ import Dishdetail from './DishdetailComponent';
 import Reservation from './ReservationComponent';
 import Favorites from './FavoriteComponent';
 import Login from './LoginComponent';
-import { View, Platform, Image, StyleSheet, ScrollView, Text } from 'react-native';
+import { View, Platform, Image, StyleSheet, ScrollView, Text, NetInfo } from 'react-native';
 import { createStackNavigator, createDrawerNavigator, DrawerItems, SafeAreaView } from 'react-navigation';
 import { Icon } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { fetchDishes, fetchComments, fetchPromos, fetchLeaders } from '../redux/ActionCreators';
+import Toast from 'react-native-tiny-toast';
 
 const mapStateToProps = state => {
     return {
@@ -311,6 +312,38 @@ class Main extends Component {
         this.props.fetchComments();
         this.props.fetchPromos();
         this.props.fetchLeaders();
+
+        NetInfo.getConnectionInfo()
+            .then((connectionInfo) => {
+                Toast.show('Initial Network Connctivity Type: '
+                    + connectionInfo.type + ', effectiveType: ' + connectionInfo.effectiveType, 
+                    {duration: 2000})
+            });
+
+            NetInfo.addEventListener('connectionChange', this.handleConnectivityChange)
+    }
+
+    componentWillUnmount() {
+        NetInfo.removeEventListener('connectionChange', this.handleConnectivityChange)
+    }
+
+    handleConnectivityChange = (connectionInfo) => {
+        switch (connectionInfo.type) {
+            case 'none':
+                Toast.show('You are now offline!', {duration: 2000})
+                break;
+            case 'wifi':
+                Toast.show('You are now connected to WiFi!', {duration: 2000})
+                break;
+            case 'cellular':
+                Toast.show('You are now connected to Cellular!', {duration: 2000})
+                break;
+            case 'unknown':
+                Toast.show('You now have an unknown connection!', {duration: 2000})
+                break;
+            default:
+                break;
+        }
     }
 
     render() {
